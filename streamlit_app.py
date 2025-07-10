@@ -24,9 +24,14 @@ with tab1:
         candidate = st.selectbox("Selecciona un candidato", df['index'].unique())
         date_range = st.date_input("Rango de fechas", [df['date_published'].min(), df['date_published'].max()])
     with col2:
-        filtered = df[(df['index'] == candidate) &
-                      (df['date_published'] >= pd.to_datetime(date_range[0])) &
-                      (df['date_published'] <= pd.to_datetime(date_range[1]))]
+        start_date = pd.to_datetime(date_range[0]).tz_localize(None)
+        end_date = pd.to_datetime(date_range[1]).tz_localize(None)
+
+        filtered = df[
+            (df['index'] == candidate) &
+            (df['date_published'].dt.tz_localize(None) >= start_date) &
+            (df['date_published'].dt.tz_localize(None) <= end_date)
+        ]
         st.metric("Menciones Totales", len(filtered))
         st.metric("Positivas", (filtered['tono'] == 'positivo').sum())
         st.metric("Negativas", (filtered['tono'] == 'negativo').sum())
