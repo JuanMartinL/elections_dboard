@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('dataout/candidates_news.csv')
 
 df['date_published'] = pd.to_datetime(df['date_published'])
+df['date_published'] = df['date_published'].dt.tz_localize(None)
 
 # Layout and Tabs
 st.set_page_config(layout="wide")
