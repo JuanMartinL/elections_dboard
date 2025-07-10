@@ -82,22 +82,26 @@ with tab2:
     df2 = df[df['index'] == cand2]
 
     st.subheader("Comparación de menciones mensuales")
-    m1 = df1.groupby(df1['date_published'].dt.to_period('M')).size().rename(cand1)
-    m2 = df2.groupby(df2['date_published'].dt.to_period('M')).size().rename(cand2)
-    comparison = pd.concat([m1, m2], axis=1).fillna(0)
-    comparison.index = comparison.index.to_timestamp()
-    fig3 = px.line(comparison, markers=True)
-    st.plotly_chart(fig3, use_container_width=True)
+    if cand1 == cand2:
+        st.warning("Por favor selecciona dos candidatos distintos para el comparativo.")
+    else:
+        m1 = df1.groupby(df1['date_published'].dt.to_period('M')).size().rename(cand1)
+        m2 = df2.groupby(df2['date_published'].dt.to_period('M')).size().rename(cand2)
+        comparison = pd.concat([m1, m2], axis=1).fillna(0)
+        comparison.index = comparison.index.to_timestamp()
 
-    st.subheader("Comparación de % de noticias positivas")
-    p1 = df1.groupby(df1['date_published'].dt.to_period('M'))['tono'].apply(
-        lambda x: (x == 'positivo').sum() / len(x) * 100).rename(f"% Positivas {cand1}")
-    p2 = df2.groupby(df2['date_published'].dt.to_period('M'))['tono'].apply(
-        lambda x: (x == 'positivo').sum() / len(x) * 100).rename(f"% Positivas {cand2}")
-    pct_pos = pd.concat([p1, p2], axis=1).fillna(0)
-    pct_pos.index = pct_pos.index.to_timestamp()
-    fig4 = px.line(pct_pos, markers=True)
-    st.plotly_chart(fig4, use_container_width=True)
+        fig3 = px.line(comparison, markers=True)
+        st.plotly_chart(fig3, use_container_width=True)
+
+        st.subheader("Comparación de % de noticias positivas")
+        p1 = df1.groupby(df1['date_published'].dt.to_period('M'))['tono'].apply(
+            lambda x: (x == 'positivo').sum() / len(x) * 100).rename(f"% Positivas {cand1}")
+        p2 = df2.groupby(df2['date_published'].dt.to_period('M'))['tono'].apply(
+            lambda x: (x == 'positivo').sum() / len(x) * 100).rename(f"% Positivas {cand2}")
+        pct_pos = pd.concat([p1, p2], axis=1).fillna(0)
+        pct_pos.index = pct_pos.index.to_timestamp()
+        fig4 = px.line(pct_pos, markers=True)
+        st.plotly_chart(fig4, use_container_width=True)
 
 # === TAB 3: Análisis de Narrativa ===
 with tab3:
