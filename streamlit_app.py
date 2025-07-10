@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from collections import Counter
+import re
 
 # Load data
 df = pd.read_csv('dataout/candidates_news.csv')
@@ -110,12 +112,21 @@ with tab3:
     filtered_narr = df[df['index'] == candidate_narr]
 
     st.subheader("🔤 Nube de palabras (cuerpo del artículo)")
+    # Combine all text
     text = " ".join(filtered_narr["articleBody_clean"].dropna())
-    if text:
-        wordcloud = WordCloud(width=900, height=400, background_color='white').generate(text)
+
+    # Clean and tokenize
+    tokens = re.findall(r'\b\w+\b', text.lower())
+    word_freq = Counter(tokens)
+
+    # Filter frequencies > 5
+    filtered_freq = {word: count for word, count in word_freq.items() if count > 5}
+
+    if filtered_freq:
+        wordcloud = WordCloud(width=900, height=400, background_color='white').generate_from_frequencies(filtered_freq)
         fig5, ax = plt.subplots(figsize=(12, 5))
         ax.imshow(wordcloud, interpolation='bilinear')
         ax.axis("off")
         st.pyplot(fig5)
     else:
-        st.warning("No hay texto disponible para este candidato.")
+        st.warning("No hay palabras con frecuencia mayor a 5."))
