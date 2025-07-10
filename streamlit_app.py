@@ -17,26 +17,39 @@ tab1, tab2, tab3 = st.tabs(["Análisis Candidatos", "Comparativo", "Análisis de
 
 # === TAB 1: Análisis de Candidatos ===
 with tab1:
-    st.header("🔎 Análisis de un Candidato")
+    st.header("Análisis de un Candidato")
     col1, col2 = st.columns([3, 1])
 
     with col1:
         candidate = st.selectbox("Selecciona un candidato", df['index'].unique())
-        date_range = st.date_input("Rango de fechas", [df['date_published'].min(), df['date_published'].max()])
+        # Extract unique months from the dataset
+        df['month_period'] = df['date_published'].dt.to_period('M')
+        available_months = sorted(df['month_period'].unique())
+
+        # Monthly slicer range
+        start_month, end_month = st.select_slider(
+            "Selecciona rango de meses",
+            options=available_months,
+            value=(available_months[0], available_months[-1]),
+            format_func=lambda x: x.strftime("%b %Y")
+        )
+
+
     with col2:
-        start_date = pd.to_datetime(date_range[0]).tz_localize(None)
-        end_date = pd.to_datetime(date_range[1]).tz_localize(None)
+        # Convert Periods to timestamps
+        start_date = start_month.to_timestamp()
+        end_date = end_month.to_timestamp(how='end')
 
         filtered = df[
             (df['index'] == candidate) &
-            (df['date_published'].dt.tz_localize(None) >= start_date) &
-            (df['date_published'].dt.tz_localize(None) <= end_date)
+            (df['date_published'] >= start_date) &
+            (df['date_published'] <= end_date)
         ]
         st.metric("Menciones Totales", len(filtered))
         st.metric("Positivas", (filtered['tono'] == 'positivo').sum())
         st.metric("Negativas", (filtered['tono'] == 'negativo').sum())
 
-    st.subheader("📆 Serie histórica de menciones")
+    st.subheader("Serie histórica de menciones")
     mentions_ts = (
         filtered
         .groupby(filtered['date_published'].dt.to_period('M'))
