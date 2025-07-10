@@ -129,4 +129,4 @@ with tab3:
         ax.axis("off")
         st.pyplot(fig5)
     else:
-        st.warning("No hay palabras con frecuencia mayor a 5."))
+        st.warning("No hay palabras con frecuencia mayor a 5.")
