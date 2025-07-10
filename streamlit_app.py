@@ -37,7 +37,12 @@ with tab1:
         st.metric("Negativas", (filtered['tono'] == 'negativo').sum())
 
     st.subheader("📆 Serie histórica de menciones")
-    mentions_ts = filtered.groupby(filtered['date_published'].dt.to_period('M')).size().reset_index(name='Menciones')
+    mentions_ts = (
+        filtered
+        .groupby(filtered['date_published'].dt.to_period('M'))
+        .size()
+        .reset_index(name='Menciones')
+    )
     mentions_ts['date_published'] = mentions_ts['date_published'].dt.to_timestamp()
     fig1 = px.line(mentions_ts, x='date_published', y='Menciones', markers=True)
     st.plotly_chart(fig1, use_container_width=True)
