@@ -5,13 +5,13 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 # Load data
-df = pd.read_csv('dataout/candidates_news.csv', parse_dates=["date_published"])
+df = pd.read_csv('dataout/candidates_news.csv')
 
 # Layout and Tabs
 st.set_page_config(layout="wide")
 st.title("📡 Escucha Social - Análisis de Candidatos")
 
-tab1, tab2, tab3 = st.tabs(["🔎 Análisis Candidatos", "⚖️ Comparativo", "🧠 Análisis de Narrativa"])
+tab1, tab2, tab3 = st.tabs(["Análisis Candidatos", "Comparativo", "Análisis de Narrativa"])
 
 # === TAB 1: Análisis de Candidatos ===
 with tab1:
@@ -25,9 +25,9 @@ with tab1:
         filtered = df[(df['index'] == candidate) &
                       (df['date_published'] >= pd.to_datetime(date_range[0])) &
                       (df['date_published'] <= pd.to_datetime(date_range[1]))]
-        st.metric("📰 Menciones Totales", len(filtered))
-        st.metric("✅ Positivas", (filtered['tono'] == 'positivo').sum())
-        st.metric("❌ Negativas", (filtered['tono'] == 'negativo').sum())
+        st.metric("Menciones Totales", len(filtered))
+        st.metric("Positivas", (filtered['tono'] == 'positivo').sum())
+        st.metric("Negativas", (filtered['tono'] == 'negativo').sum())
 
     st.subheader("📆 Serie histórica de menciones")
     mentions_ts = filtered.groupby(filtered['date_published'].dt.to_period('M')).size().reset_index(name='Menciones')
@@ -35,7 +35,7 @@ with tab1:
     fig1 = px.line(mentions_ts, x='date_published', y='Menciones', markers=True)
     st.plotly_chart(fig1, use_container_width=True)
 
-    st.subheader("🎭 Tono de las noticias a lo largo del tiempo")
+    st.subheader("Tono de las noticias a lo largo del tiempo")
     sentiment = filtered.groupby([filtered['date_published'].dt.to_period('M'), 'tono']).size().unstack().fillna(0)
     sentiment = sentiment.div(sentiment.sum(axis=1), axis=0) * 100
     sentiment.index = sentiment.index.to_timestamp()
@@ -44,7 +44,7 @@ with tab1:
 
 # === TAB 2: Comparativo ===
 with tab2:
-    st.header("⚖️ Comparativo entre Candidatos")
+    st.header("Comparativo entre Candidatos")
     col1, col2 = st.columns(2)
 
     with col1:
@@ -55,7 +55,7 @@ with tab2:
     df1 = df[df['index'] == cand1]
     df2 = df[df['index'] == cand2]
 
-    st.subheader("📈 Comparación de menciones mensuales")
+    st.subheader("Comparación de menciones mensuales")
     m1 = df1.groupby(df1['date_published'].dt.to_period('M')).size().rename(cand1)
     m2 = df2.groupby(df2['date_published'].dt.to_period('M')).size().rename(cand2)
     comparison = pd.concat([m1, m2], axis=1).fillna(0)
@@ -63,7 +63,7 @@ with tab2:
     fig3 = px.line(comparison, markers=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.subheader("💚 Comparación de % de noticias positivas")
+    st.subheader("Comparación de % de noticias positivas")
     p1 = df1.groupby(df1['date_published'].dt.to_period('M'))['tono'].apply(
         lambda x: (x == 'positivo').sum() / len(x) * 100).rename(f"% Positivas {cand1}")
     p2 = df2.groupby(df2['date_published'].dt.to_period('M'))['tono'].apply(
@@ -75,7 +75,7 @@ with tab2:
 
 # === TAB 3: Análisis de Narrativa ===
 with tab3:
-    st.header("🧠 Análisis de Narrativa del Candidato")
+    st.header("Análisis de Narrativa del Candidato")
     candidate_narr = st.selectbox("Selecciona un candidato para la narrativa", df['index'].unique(), key='narr')
     filtered_narr = df[df['index'] == candidate_narr]
 
