@@ -5,7 +5,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 # Load data
-df = pd.read_csv('dataout/sentiments_all_candidates.csv', parse_dates=["date_published"])
+df = pd.read_csv('dataout/candidates_news.csv', parse_dates=["date_published"])
 
 # Layout and Tabs
 st.set_page_config(layout="wide")
