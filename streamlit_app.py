@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 # Load data
 df = pd.read_csv('dataout/candidates_news.csv')
 
+df['date_published'] = pd.to_datetime(df['date_published'])
+
 # Layout and Tabs
 st.set_page_config(layout="wide")
-st.title("📡 Escucha Social - Análisis de Candidatos")
+st.title("Escucha Social - Análisis de Candidatos")
 
 tab1, tab2, tab3 = st.tabs(["Análisis Candidatos", "Comparativo", "Análisis de Narrativa"])
 
